@@ -34,7 +34,7 @@ jobs:
       - name: Run MLflow Project
         run: |
           export MLFLOW_TRACKING_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
-          mlflow run criteria_3/Workflow-CI/MLProject --env-manager=local
+          mlflow run criteria_3/Workflow-CI/MLProject --env-manager=local --experiment-name="Insurance Cost Prediction Experiment"
 
       - name: Get latest MLflow run_id and model directory
         run: |
