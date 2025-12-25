@@ -35,7 +35,7 @@ jobs:
         run: |
           python criteria_3/Workflow-CI/MLProject/modelling.py
 
-      - name: Get latest MLflow run_id
+      - name: Get latest MLflow run_id and model directory
         run: |
           # Find the latest experiment directory (numeric directories only)
           echo "Looking for the latest experiment directory in mlruns..."
@@ -56,15 +56,27 @@ jobs:
             exit 1
           fi
 
+          # Find the latest model directory inside the models folder
+          echo "Looking for the latest model directory in models folder..."
+          MODEL_DIR=$(ls -td "$LATEST_EXPERIMENT_PATH/models/m-"*/ | head -n 1)
+          if [ -z "$MODEL_DIR" ]; then
+            echo "No model directory found in $LATEST_EXPERIMENT_PATH/models. Exiting."
+            exit 1
+          fi
+          MODEL_DIR=$(basename "$MODEL_DIR")
+          echo "Found model directory: $MODEL_DIR"
+
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
           echo "EXPERIMENT_ID=$LATEST_EXPERIMENT" >> $GITHUB_ENV
+          echo "MODEL_DIR=$MODEL_DIR" >> $GITHUB_ENV
           echo "Latest experiment ID: $LATEST_EXPERIMENT"
           echo "Latest run ID: $RUN_ID"
+          echo "Latest model directory: $MODEL_DIR"
 
       - name: Build Docker Model
         run: |
           export MLFLOW_TRACKING_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
-          MODEL_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns/$EXPERIMENT_ID/models/m-$RUN_ID/artifacts"
+          MODEL_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns/$EXPERIMENT_ID/models/$MODEL_DIR/artifacts"
           echo "Using model URI: $MODEL_URI"
           mlflow models build-docker --model-uri "$MODEL_URI" --name "insurance_model"
 
