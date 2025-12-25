@@ -1,0 +1,22 @@
+artifact_path: file:///E:/Codebases/altaf_cuki/criteria_3/Workflow-CI/MLProject/mlruns/173741004369801323/models/m-1dba05cd7f8546ba90c512cb42be1530/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.10
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+mlflow_version: 3.8.0
+model_id: m-1dba05cd7f8546ba90c512cb42be1530
+model_size_bytes: 9655945
+model_uuid: m-1dba05cd7f8546ba90c512cb42be1530
+prompts: null
+run_id: 73c74796562e4aadb577b7b5158bda75
+utc_time_created: '2025-12-24 17:04:41.245574'

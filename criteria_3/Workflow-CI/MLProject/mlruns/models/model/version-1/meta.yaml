@@ -1,0 +1,15 @@
+creation_timestamp: 1766597789054
+current_stage: None
+deployment_job_state: null
+description: ''
+last_updated_timestamp: 1766597789054
+model_id: m-1dba05cd7f8546ba90c512cb42be1530
+name: model
+run_id: 73c74796562e4aadb577b7b5158bda75
+run_link: ''
+source: models:/m-1dba05cd7f8546ba90c512cb42be1530
+status: READY
+status_message: null
+storage_location: file:///E:/Codebases/altaf_cuki/criteria_3/Workflow-CI/MLProject/mlruns/173741004369801323/models/m-1dba05cd7f8546ba90c512cb42be1530/artifacts
+user_id: null
+version: 1

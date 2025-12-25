@@ -1,0 +1,5 @@
+age,sex,bmi,children,smoker,charges,loc_northwest,loc_southeast,loc_southwest
+25,male,28.5,0,no,16884.92,0,1,0
+30,female,24.3,1,yes,1725.55,1,0,0
+35,male,30.1,2,no,4449.46,0,1,0
+40,female,22.7,3,yes,21984.47,1,0,0
