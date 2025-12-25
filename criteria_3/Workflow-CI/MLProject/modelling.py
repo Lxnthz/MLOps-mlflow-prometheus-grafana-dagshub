@@ -62,3 +62,8 @@ with mlflow.start_run(run_name="Basic_RandomForest") as run:
 
     print(f"Model logged under run ID: {run.info.run_id}")
     print("Basic Model Training Completed.")
+    
+import os
+print(f"Current working directory: {os.getcwd()}")
+print(f"Data path (absolute): {os.path.abspath(data_path)}")
+print(f"Data path exists: {os.path.exists(data_path)}")
