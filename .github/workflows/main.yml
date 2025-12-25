@@ -39,7 +39,7 @@ jobs:
         run: |
           export MLFLOW_TRACKING_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
           mlflow experiments create \
-            --name "Insurance Cost Prediction Experiment" \
+            --experiment-name "Insurance Cost Prediction Experiment" \
             --artifact-location "file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
 
 
