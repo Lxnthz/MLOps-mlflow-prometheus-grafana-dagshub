@@ -31,9 +31,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r criteria_3/Workflow-CI/MLProject/requirements.txt
 
-      - name: Run MLflow project
+      - name: Run MLflow Project
         run: |
-          python criteria_3/Workflow-CI/MLProject/modelling.py
+          export MLFLOW_TRACKING_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
+          mlflow run criteria_3/Workflow-CI/MLProject --env-manager=local
 
       - name: Get latest MLflow run_id and model directory
         run: |
