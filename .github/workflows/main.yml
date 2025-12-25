@@ -31,10 +31,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r criteria_3/Workflow-CI/MLProject/requirements.txt
 
-      - name: Run MLflow Project
+      - name: Reset MLflow state
+        run: |
+          rm -rf criteria_3/Workflow-CI/MLProject/mlruns
+
+      - name: Create MLflow experiment
         run: |
           export MLFLOW_TRACKING_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
-          mlflow run criteria_3/Workflow-CI/MLProject --env-manager=local --experiment-name="Insurance Cost Prediction Experiment"
+          mlflow experiments create \
+            --name "Insurance Cost Prediction Experiment" \
+            --artifact-location "file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
+
 
       - name: Get latest MLflow run_id and model directory
         run: |
