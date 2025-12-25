@@ -38,7 +38,9 @@ jobs:
       - name: Get latest MLflow run_id
         run: |
           # Find the latest experiment directory
+          echo "Looking for the latest experiment directory in mlruns..."
           LATEST_EXPERIMENT=$(ls -td criteria_3/Workflow-CI/MLProject/mlruns/*/ | head -n 1 | xargs basename)
+          echo "Latest experiment directory: $LATEST_EXPERIMENT"
           if [ -z "$LATEST_EXPERIMENT" ]; then
             echo "No experiment directories found. Exiting."
             exit 1
@@ -46,7 +48,9 @@ jobs:
 
           # Find the latest run ID in the latest experiment
           LATEST_EXPERIMENT_PATH="criteria_3/Workflow-CI/MLProject/mlruns/$LATEST_EXPERIMENT"
+          echo "Looking for the latest run ID in experiment path: $LATEST_EXPERIMENT_PATH"
           RUN_ID=$(ls -td "$LATEST_EXPERIMENT_PATH"/*/ | grep -Eo '[0-9a-f]{32}' | head -n 1)
+          echo "Found run ID: $RUN_ID"
           if [ -z "$RUN_ID" ]; then
             echo "No valid Run ID found in experiment $LATEST_EXPERIMENT. Exiting."
             exit 1
