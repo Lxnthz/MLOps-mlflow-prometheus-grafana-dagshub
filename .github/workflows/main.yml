@@ -28,45 +28,40 @@ jobs:
           pip install mlflow scikit-learn pandas
 
       - name: Reset MLflow state
-        run: rm -rf criteria_3/Workflow-CI/MLProject/mlruns
-
-      - name: Set MLflow tracking URI
-        run: echo "MLFLOW_TRACKING_URI=file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns" >> $GITHUB_ENV
+        run: |
+          rm -rf criteria_3/Workflow-CI/MLProject/mlruns
 
       - name: Create MLflow experiment
         run: |
+          export MLFLOW_TRACKING_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
           mlflow experiments create \
             --experiment-name "Insurance Cost Prediction Experiment" \
-            --artifact-location "$MLFLOW_TRACKING_URI" || echo "Experiment may already exist"
+            --artifact-location "file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns" || echo "Experiment already exists"
 
       - name: Run MLflow Project
         run: |
+          export MLFLOW_TRACKING_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
           mlflow run criteria_3/Workflow-CI/MLProject \
-            --env-manager local \
+            --env-manager=local \
             --experiment-name "Insurance Cost Prediction Experiment"
 
-      - name: Get latest MLflow run_id and model directory
-        id: mlflow_info
+      - name: Get latest MLflow run_id
         run: |
           EXP_PATH="criteria_3/Workflow-CI/MLProject/mlruns"
           LATEST_EXPERIMENT=$(ls -td $EXP_PATH/[0-9]*/ | head -n 1 | xargs basename)
           echo "Latest experiment directory: $LATEST_EXPERIMENT"
-          LATEST_EXPERIMENT_PATH="$EXP_PATH/$LATEST_EXPERIMENT"
 
+          LATEST_EXPERIMENT_PATH="$EXP_PATH/$LATEST_EXPERIMENT"
           RUN_ID=$(ls -td "$LATEST_EXPERIMENT_PATH"/*/ | grep -Eo '[0-9a-f]{32}' | head -n 1)
           echo "Found run ID: $RUN_ID"
 
-          MODEL_DIR=$(ls -td "$LATEST_EXPERIMENT_PATH/models/m-"*/ | head -n 1)
-          MODEL_DIR=$(basename "$MODEL_DIR")
-          echo "Found model directory: $MODEL_DIR"
-
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
           echo "EXPERIMENT_ID=$LATEST_EXPERIMENT" >> $GITHUB_ENV
-          echo "MODEL_DIR=$MODEL_DIR" >> $GITHUB_ENV
 
       - name: Build Docker Model
         run: |
-          MODEL_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns/$EXPERIMENT_ID/models/$MODEL_DIR/artifacts"
+          export MLFLOW_TRACKING_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
+          MODEL_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns/$EXPERIMENT_ID/$RUN_ID/artifacts/model"
           echo "Using model URI: $MODEL_URI"
           mlflow models build-docker --model-uri "$MODEL_URI" --name "insurance_model"
 
@@ -77,7 +72,9 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Tag Docker Image
-        run: docker tag insurance_model ${{ secrets.DOCKER_HUB_USERNAME }}/insurance_model:latest
+        run: |
+          docker tag insurance_model ${{ secrets.DOCKER_HUB_USERNAME }}/insurance_model:latest
 
       - name: Push Docker Image
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/insurance_model:latest
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/insurance_model:latest
