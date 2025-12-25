@@ -3,10 +3,7 @@ conda_env: conda.yaml
 
 entry_points:
   main:
-    parameters:
-      alpha: { type: float, default: 0.5 }
-      l1_ratio: { type: float, default: 0.5 }
-    command: "python modelling.py --alpha {alpha} --l1_ratio {l1_ratio}"
+    command: "python modelling.py"
 
 experiment:
   name: "Insurance Cost Prediction Experiment"
