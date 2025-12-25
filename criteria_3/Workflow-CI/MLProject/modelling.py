@@ -9,10 +9,7 @@ import os
 
 # --- MLflow tracking setup ---
 mlruns_path = pathlib.Path("mlruns").absolute()
-# Convert Windows path to file URI
-mlruns_uri = mlruns_path.as_uri()
-print(f"Using MLruns URI: {mlruns_uri}")
-mlflow.set_tracking_uri(mlruns_uri)
+mlflow.set_tracking_uri(f"file://{mlruns_path}")  # Use file:// format
 mlflow.set_experiment("Insurance Cost Prediction Experiment")
 
 # --- Load or create dataset ---
@@ -33,7 +30,6 @@ if not data_path.exists():
         "loc_southwest": [0, 0, 0, 0],
     })
     df.to_csv(data_path, index=False)
-    print(f"Dummy dataset created at: {data_path}")
 else:
     df = pd.read_csv(data_path)
 
@@ -46,18 +42,21 @@ X = df.drop(columns=['charges'])
 y = df['charges']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# --- Train and log model ---
+# --- Train and log model as artifact ---
 with mlflow.start_run(run_name="RandomForest_Insurance") as run:
     model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
-    
-    # Log the model to the artifacts directory
-    mlflow.sklearn.log_model(model, artifact_path="model_local", registered_model_name=None)
+
+    # Log to run artifacts folder
+    mlflow.sklearn.log_model(
+        sk_model=model,
+        artifact_path="model",  # logs under artifacts/model
+        registered_model_name=None
+    )
 
     print(f"Run ID: {run.info.run_id}")
     print(f"Model logged at: {run.info.artifact_uri}/model")
 
-# Debug info
-print(f"Current working directory: {os.getcwd()}")
+# Debug
 print(f"MLruns path: {mlruns_path}")
-print(f"Expected artifact folder: {mlruns_path}\\<experiment_id>\\<run_id>\\artifacts\\model")
+print(f"Current working dir: {os.getcwd()}")
