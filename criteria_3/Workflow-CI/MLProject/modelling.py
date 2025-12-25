@@ -12,7 +12,7 @@ mlruns_path = pathlib.Path("mlruns").absolute().as_uri()
 mlflow.set_tracking_uri(mlruns_path)
 
 # Automatically create or use the experiment
-experiment_name = "1"
+experiment_name = "Insurance Cost Prediction Experiment"
 mlflow.set_experiment(experiment_name)
 
 # Dynamically resolve the absolute path to the data file within the standalone criteria_3 directory
