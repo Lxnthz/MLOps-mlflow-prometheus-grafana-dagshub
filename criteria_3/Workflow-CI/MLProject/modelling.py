@@ -15,13 +15,15 @@ mlflow.set_tracking_uri(mlruns_path)
 experiment_name = "1"
 mlflow.set_experiment(experiment_name)
 
-data_path = "./insurance_preprocessing/insurance_clean.csv"
+# Dynamically resolve the absolute path to the data file within the standalone criteria_3 directory
+base_dir = pathlib.Path(__file__).parent.absolute()
+data_path = base_dir / "insurance_preprocessing/insurance_clean.csv"
 
 # Check if the dataset exists
-if not os.path.exists(data_path):
+if not data_path.exists():
     # Create a dummy dataset if it doesn't exist
     print("Dataset file not found. Creating a dummy dataset...")
-    os.makedirs(os.path.dirname(data_path), exist_ok=True)
+    data_path.parent.mkdir(parents=True, exist_ok=True)
     dummy_data = {
         "age": [25, 30, 35, 40],
         "sex": ["male", "female", "male", "female"],
