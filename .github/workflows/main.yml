@@ -28,8 +28,7 @@ jobs:
           pip install mlflow scikit-learn pandas
 
       - name: Reset MLflow state
-        run: |
-          rm -rf criteria_3/Workflow-CI/MLProject/mlruns
+        run: rm -rf criteria_3/Workflow-CI/MLProject/mlruns
 
       - name: Create MLflow experiment
         run: |
@@ -45,44 +44,33 @@ jobs:
             --env-manager=local \
             --experiment-name "Insurance Cost Prediction Experiment"
 
-      - name: Get latest MLflow run_id
+      - name: Get latest MLflow run_id and model folder
         run: |
           EXP_PATH="criteria_3/Workflow-CI/MLProject/mlruns"
           LATEST_EXPERIMENT=$(ls -td $EXP_PATH/[0-9]*/ | head -n 1 | xargs basename)
           echo "Latest experiment directory: $LATEST_EXPERIMENT"
 
-          LATEST_EXPERIMENT_PATH="$EXP_PATH/$LATEST_EXPERIMENT"
-          RUN_ID=$(ls -td "$LATEST_EXPERIMENT_PATH"/*/ | grep -Eo '[0-9a-f]{32}' | head -n 1)
+          RUN_ID=$(ls -td "$EXP_PATH/$LATEST_EXPERIMENT"/*/ | grep -Eo '[0-9a-f]{32}' | head -n 1)
           echo "Found run ID: $RUN_ID"
 
+          MODEL_DIR=$(ls -td "$EXP_PATH/$LATEST_EXPERIMENT/models/m-"*/ | head -n 1)
+          echo "Resolved model folder: $MODEL_DIR"
+
+          # Export for later steps
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
           echo "EXPERIMENT_ID=$LATEST_EXPERIMENT" >> $GITHUB_ENV
-
-      - name: Debug MLflow Model Directory
-        run: |
-          echo "MLruns path: $(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
-          echo "Experiment ID: $EXPERIMENT_ID"
-          echo "Run ID: $RUN_ID"
-
-          echo "Listing experiment folder:"
-          ls -R "criteria_3/Workflow-CI/MLProject/mlruns/$EXPERIMENT_ID"
-
-          echo "Listing run folder:"
-          ls -R "criteria_3/Workflow-CI/MLProject/mlruns/$EXPERIMENT_ID/$RUN_ID"
-
-          echo "Listing models folder:"
-          ls -R "criteria_3/Workflow-CI/MLProject/mlruns/$EXPERIMENT_ID/models"
-
-          MODEL_DIR=$(ls -td criteria_3/Workflow-CI/MLProject/mlruns/$EXPERIMENT_ID/models/m-*/ | head -n 1)
-          echo "Resolved model folder: $MODEL_DIR"
-          echo "Contents of model folder:"
-          ls -R "$MODEL_DIR"
           echo "MODEL_DIR=$MODEL_DIR" >> $GITHUB_ENV
+
+      - name: Debug MLflow Model Folder
+        run: |
+          echo "Listing contents of model folder:"
+          ls -R "$MODEL_DIR"
 
       - name: Build Docker Model
         run: |
           export MLFLOW_TRACKING_URI="file://$(pwd)/criteria_3/Workflow-CI/MLProject/mlruns"
-          MODEL_URI="file://$MODEL_DIR/artifacts"
+          # Use MODEL_DIR directly (no /artifacts)
+          MODEL_URI="file://$MODEL_DIR"
           echo "Using model URI: $MODEL_URI"
           mlflow models build-docker --model-uri "$MODEL_URI" --name "insurance_model"
 
@@ -93,9 +81,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Tag Docker Image
-        run: |
-          docker tag insurance_model ${{ secrets.DOCKER_HUB_USERNAME }}/insurance_model:latest
+        run: docker tag insurance_model ${{ secrets.DOCKER_HUB_USERNAME }}/insurance_model:latest
 
       - name: Push Docker Image
-        run: |
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/insurance_model:latest
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/insurance_model:latest
