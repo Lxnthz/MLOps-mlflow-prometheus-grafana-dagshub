@@ -35,6 +35,16 @@ In this repository, I focus on:
 
 ## Tools and Technologies Used
 
+<div style="display:flex; gap:12px; margin-bottom:10px;padding: 10px;">
+  <img src="/images/mlflow.png" width="100">
+  <img src="/images/prometheus.png" width="100">
+  <img src="/images/grafana.png" width="100">
+  <img src="/images/dagshub.png" width='100'>
+  <img src="/images/actions.png" width='100'>
+  <img src="/images/python.png" width="100">
+  <img src="/images/docker.png" width="100">
+</div>
+
 - **MLflow**: For experiment tracking and model management.
 - **Prometheus**: For monitoring metrics.
 - **Grafana**: For creating insightful dashboards.
