@@ -41,6 +41,7 @@ In this repository, I focus on:
 - **DagsHub**: For collaborative machine learning workflows.
 - **GitHub Actions**: For CI/CD automation.
 - **Python**: For scripting and machine learning tasks.
+- **Docker**: For model building and storage location
 
 ## Why This Project Matters
 
